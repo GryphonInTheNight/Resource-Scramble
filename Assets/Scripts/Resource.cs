@@ -18,11 +18,9 @@ public class Resource : MonoBehaviour
     public GameObject goals;
     private SortedList<int, Goal> myGoals;
     private IList<int> goalsToMeet;
-    private GameManager gm;
 
     private void Start()
     {
-        gm = GameObject.Find("Game Manager").GetComponent<GameManager>();
         numberText.text = gameObject.name + ": " + number;
         baseText.text = "Base: " + baseIncrease;
         multiplierText.text = "Multiplier: " + multiplier;
@@ -57,7 +55,7 @@ public class Resource : MonoBehaviour
             metGoal++;
         }
         UpdateNumberText();
-        gm.UpdateScore(true);
+        GameManager.Instance.UpdateScore(true);
     }
 
     //Attempts to lower the number, i.e. buys with the currency.  returns true if successful.
@@ -78,7 +76,7 @@ public class Resource : MonoBehaviour
         else
         {
             goalText.text = "Next Goal: " + number + "/" + goalsToMeet[metGoal - 1];
-                gm.CheckIfWon(gameObject, (goalsToMeet[metGoal - 1] <= number));
+                GameManager.Instance.CheckIfWon(gameObject, (goalsToMeet[metGoal - 1] <= number));
         }
         for (int i = 0; i < metGoal; i++)
             if (number >= goalsToMeet[i])

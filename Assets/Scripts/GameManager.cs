@@ -6,35 +6,48 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject titleScreen;
+    public static GameManager Instance;
+
     public GameObject mainGameScreen;
     public GameObject mainGame;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI bonusText;
     public GameObject winScreen;
     public TextMeshProUGUI winScoreText;
-    [SerializeField] int score = 0;
+    public TextMeshProUGUI musicButtonText;
+    public TextMeshProUGUI soundButtonText;
+    [SerializeField] private int score = 0;
+    [SerializeField] private int defDifficulty = 2;
 
     public Resource[] resources;
     [SerializeField] int bonusIndex = 0;
     [SerializeField] int bonusStrength = 1;
     private Dictionary<GameObject, bool> allGoalsMet;
+    private AudioSource clipPlayer;
 
-    private void Start()
+    private void Awake()
     {
+        Instance = this;
+
         score = 0;
-    }
-
-    public void StartGame(int difficulty)
-    {
-        titleScreen.SetActive(false);
-        mainGame.SetActive(true);
-        mainGameScreen.SetActive(true);
+        clipPlayer = gameObject.GetComponent<AudioSource>();
         UpdateScore(false);
-        foreach (Resource res in resources)
+
+
+        if (Settings.Instance != null)
         {
-            res.InitializeGoals(difficulty);
+            foreach (Resource res in resources)
+            {
+                res.InitializeGoals(Settings.Instance.Difficulty);
+            }
+            UpdateMusicButtonText(!Settings.Instance.playMusic);
+            UpdateSoundButtonText(!Settings.Instance.playSound);
+            clipPlayer.mute = !Settings.Instance.playSound;
         }
+        else
+            foreach (Resource res in resources)
+                res.InitializeGoals(defDifficulty);
+
         allGoalsMet = new Dictionary<GameObject, bool>();
         foreach (Resource res in resources)
             allGoalsMet.Add(res.gameObject, false);
@@ -45,6 +58,7 @@ public class GameManager : MonoBehaviour
         if (increaseClicks)
             score++;
         scoreText.text = "Clicks: " + score;
+
         if (score % 10 == 0)
         {
             if (bonusIndex < resources.Length)
@@ -104,8 +118,45 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RestartGame()
+    public void ReturnToMenu()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(0);
+    }
+
+    public void ToggleMusic()
+    {
+        if (Settings.Instance != null)
+            UpdateMusicButtonText(!Settings.Instance.ToggleMusic());
+    }
+
+    private void UpdateMusicButtonText(bool strikethrough)
+    {
+        if (strikethrough)
+            musicButtonText.text = "<s>Music</s>";
+        else
+            musicButtonText.text = "Music";
+    }
+
+    public void ToggleMute()
+    {
+        if (Settings.Instance != null)
+        {
+            UpdateSoundButtonText(!Settings.Instance.ToggleMute());
+            clipPlayer.mute = !Settings.Instance.playSound;
+        }
+        else
+        {
+            clipPlayer.mute = !clipPlayer.mute;
+            UpdateSoundButtonText(clipPlayer.mute);
+        }
+    }
+
+    private void UpdateSoundButtonText(bool strikethrough)
+    {
+        if (strikethrough)
+            soundButtonText.text = "<s>Sound</s>";
+        else
+            soundButtonText.text = "Sound";
+
     }
 }

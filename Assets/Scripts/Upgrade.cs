@@ -21,13 +21,11 @@ public class Upgrade : MonoBehaviour
     public Resource myCurrency;
     public TextMeshProUGUI upgradeText;
     public List<Vector3Int> upgradeList;
-    private GameManager gm;
     private int currentUpgrade = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        gm = GameObject.Find("Game Manager").GetComponent<GameManager>();
         UpdateUIText();
     }
 
@@ -39,16 +37,12 @@ public class Upgrade : MonoBehaviour
             int multiply = upgradeList[currentUpgrade].x % 2;
             int factor = upgradeList[currentUpgrade].y;
             if (multiply == 0)
-            {
-                gm.HandleUpgrade(myType, false, factor);
-            }
+                GameManager.Instance.HandleUpgrade(myType, false, factor);
             else
-            {
-                gm.HandleUpgrade(myType, true, factor);
-            }
+                GameManager.Instance.HandleUpgrade(myType, true, factor);
             currentUpgrade++;
             UpdateUIText();
-            gm.UpdateScore(true);
+            GameManager.Instance.UpdateScore(true);
         }
     }
 
@@ -60,11 +54,13 @@ public class Upgrade : MonoBehaviour
             int multiply = upgradeList[currentUpgrade].x % 2;
             int factor = upgradeList[currentUpgrade].y;
             int cost = upgradeList[currentUpgrade].z;
-            if (myType < gm.resources.Length)
+            if (myType < GameManager.Instance.resources.Length)
                 if (multiply == 0)
-                    upgradeText.text = gm.resources[myType].gameObject.name + "\nBase +" + factor + "\nCost:\n" + cost;
+                    upgradeText.text = GameManager.Instance.resources[myType].gameObject.name +
+                        "\nBase +" + factor + "\nCost:\n" + cost;
                 else
-                    upgradeText.text = gm.resources[myType].gameObject.name + " x" + factor + "\n\nCost:\n" + cost;
+                    upgradeText.text = GameManager.Instance.resources[myType].gameObject.name +
+                        " x" + factor + "\n\nCost:\n" + cost;
             else if (multiply == 0)
                 upgradeText.text = "All\nBase +" + factor + "\nCost:\n" + cost;
             else
