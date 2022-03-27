@@ -7,6 +7,7 @@ public class MainMenuUI : MonoBehaviour
 {
     public TextMeshProUGUI musicButtonText;
     public TextMeshProUGUI soundButtonText;
+    public TextMeshProUGUI highScoresText;
 
     private void Awake()
     {
@@ -44,5 +45,11 @@ public class MainMenuUI : MonoBehaviour
         else
             soundButtonText.text = "Sound";
 
+    }
+
+    public void ShowHighScores(int targetDifficulty)
+    {
+        highScoresText.gameObject.SetActive(true);
+        highScoresText.text = Settings.Instance.GetScoreboard(targetDifficulty);
     }
 }

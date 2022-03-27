@@ -113,8 +113,9 @@ public class GameManager : MonoBehaviour
         {
             winScreen.SetActive(true);
             winScoreText.text = "You won in " + score + " clicks!";
-            mainGameScreen.SetActive(false);
             mainGame.SetActive(false);
+            Settings.Instance.CheckAndAddScore(score);
+            Settings.Instance.SaveMyData();
         }
     }
 
